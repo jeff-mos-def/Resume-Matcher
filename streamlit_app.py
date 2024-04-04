@@ -12,6 +12,8 @@ from annotated_text import annotated_text, parameters
 from streamlit_extras import add_vertical_space as avs
 from streamlit_extras.badges import badge
 
+nltk.download('punkt')
+
 from scripts.similarity.get_score import *
 from scripts.utils import get_filenames_from_dir
 from scripts.utils.logger import init_logging_config
@@ -133,6 +135,9 @@ def create_annotated_text(
 ):
     # Tokenize the input string
     tokens = nltk.word_tokenize(input_string)
+    
+    # Filter out the unwanted character (in this case '●')
+    tokens = [token for token in tokens if token != '●']
 
     # Convert the list to a set for quick lookups
     word_set = set(word_list)
@@ -155,11 +160,17 @@ def create_annotated_text(
 def read_json(filename):
     with open(filename) as f:
         data = json.load(f)
+        
+    if 'clean_data' in data:
+        data['clean_data'] = data['clean_data'].replace('●', '')
+        
     return data
 
 
 def tokenize_string(input_string):
     tokens = nltk.word_tokenize(input_string)
+    # Filter out the unwanted character
+    tokens = [token for token in tokens if token != '●']
     return tokens
 
 
